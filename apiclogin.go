@@ -16,9 +16,15 @@ import (
 
 	"bytes"
 
-
+	"github.com/goccy/go-json"
     util "github.com/prr123/utility/utilLib"
 )
+
+type user struct {
+	Name: string `json:"name"`
+	Pwd: string	`jsone:"pwd"`
+}
+
 
 func main() {
 
@@ -125,8 +131,15 @@ func main() {
     bearer := "Bearer " + tokStr
 
 	// add body
-	msg := `{"client_message": "hello, server!"}`
- 	jsonBody := []byte(msg)
+	UserAct := user{
+		Name: userStr,
+		Pwd: pwdStr,
+	}
+
+	jsonBody, err := json.Marshal(UserAct)
+	if dbg {fmt.Printf("jsonBody: %s\n",jsonBody)
+//	msg := `{"client_message": "hello, server!"}`
+// 	jsonBody := []byte(msg)
  	bodyReader := bytes.NewReader(jsonBody)
 
     // Create a new request using http
