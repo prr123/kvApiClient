@@ -21,8 +21,8 @@ import (
 )
 
 type user struct {
-	Name: string `json:"name"`
-	Pwd: string	`jsone:"pwd"`
+	Name string `json:"name"`
+	Pwd string	`json:"pwd"`
 }
 
 
@@ -137,7 +137,7 @@ func main() {
 	}
 
 	jsonBody, err := json.Marshal(UserAct)
-	if dbg {fmt.Printf("jsonBody: %s\n",jsonBody)
+	if dbg {fmt.Printf("jsonBody: %s\n",jsonBody)}
 //	msg := `{"client_message": "hello, server!"}`
 // 	jsonBody := []byte(msg)
  	bodyReader := bytes.NewReader(jsonBody)
@@ -151,7 +151,7 @@ func main() {
     // add authorization header to the req
 //    req.Header.Add("Content-Length", )
  // set the content length
-    req.ContentLength = int64(len(msg))
+    req.ContentLength = int64(len(jsonBody))
 
     // Send req using http Client
     client := &http.Client{}
