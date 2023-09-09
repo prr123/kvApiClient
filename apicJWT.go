@@ -1,5 +1,6 @@
-// apiclogin.go
+// apicJWT.go
 // http client program to manipulate the azulkv db
+//
 // author: prr azul software
 // date: 2 Sept 2023
 // copyright 2023 prr, azulsoftware
@@ -16,9 +17,15 @@ import (
 
 	"bytes"
 
-
+    "github.com/goccy/go-json"
     util "github.com/prr123/utility/utilLib"
 )
+
+
+type Credentials struct {
+    Password string `json:"password"`
+    Username string `json:"username"`
+}
 
 func main() {
 
@@ -109,8 +116,19 @@ func main() {
     }
 
 	cmdStr := os.Args[1]
+
+	jsonBody := []byte{}
+
 	switch cmdStr {
 	case "signin":
+    // add body
+    UserAct := Credentials{
+        Username: userStr,
+        Password: pwdStr,
+    }
+
+    jsonBody, err = json.Marshal(UserAct)
+    if dbg {fmt.Printf("jsonBody: %s\n",jsonBody)}
 
 	case "welcome":
 
@@ -151,8 +169,7 @@ func main() {
     bearer := "Bearer " + tokStr
 
 	// add body
-
-	jsonBody := []byte{}
+	fmt.Printf("Body[%d]: %s\n", len(jsonBody), jsonBody)
  	bodyReader := bytes.NewReader(jsonBody)
 
 
@@ -192,5 +209,7 @@ func main() {
 	for i, cookie := range cookies {
     	fmt.Printf("Cookie[%d]: %s=%s\n", i, cookie.Name, cookie.Value)
 	}
+
+
 	log.Println("success end apic!")
 }
