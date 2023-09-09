@@ -28,8 +28,13 @@ func main() {
     flags:=[]string{"dbg", "db", "user", "pwd", "port"}
 
 
-    useStr := "./apiclogin /user=username /pwd=password  [/port=portstr] [/db=database] [/dbg]"
+    useStr := "./apiclogin cmd /user=username /pwd=password  [/port=portstr] [/db=database] [/dbg]"
     helpStr := "program to test login via cmd line and json body:\n"
+	helpStr += "commands are:\n"
+	helpStr += "  signin\n"
+	helpStr += "  welcome\n"
+	helpStr += "  logout\n"
+	helpStr += "  refresh\n"
 
     if numarg > len(flags) +1 {
         fmt.Println("too many arguments in cli!")
@@ -37,7 +42,7 @@ func main() {
         os.Exit(-1)
     }
 
-    if numarg == <2 {
+    if numarg < 2 {
 		fmt.Printf("insufficient arguments!\n")
 		fmt.Printf("usage is: %s\n", useStr)
 		os.Exit(1)
@@ -46,6 +51,7 @@ func main() {
 	if (numarg == 2) && (os.Args[1] == "help") {
 		fmt.Printf("help: %s\n", helpStr)
 		fmt.Printf("usage is: %s\n", useStr)
+		os.Exit(1)
 	}
 
 
@@ -145,10 +151,10 @@ func main() {
     bearer := "Bearer " + tokStr
 
 	// add body
-//	msg := `{"user": "hello, server!"}`
 
- 	jsonBody := []byte(msg)
+	jsonBody := []byte{}
  	bodyReader := bytes.NewReader(jsonBody)
+
 
     // Create a new request using http
     req, err := http.NewRequest("GET", url, bodyReader)
@@ -159,7 +165,7 @@ func main() {
     // add authorization header to the req
 //    req.Header.Add("Content-Length", )
  // set the content length
-    req.ContentLength = int64(len(msg))
+    req.ContentLength = int64(len(jsonBody))
 
     // Send req using http Client
     client := &http.Client{}
@@ -181,5 +187,10 @@ func main() {
     }
     log.Printf("resp body: %s\n", string([]byte(body)))
 
+	// cookies
+	cookies := resp.Cookies()
+	for i, cookie := range cookies {
+    	fmt.Printf("Cookie[%d]: %s=%s\n", i, cookie.Name, cookie.Value)
+	}
 	log.Println("success end apic!")
 }
