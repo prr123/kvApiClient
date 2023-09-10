@@ -27,6 +27,10 @@ type Credentials struct {
     Username string `json:"username"`
 }
 
+type TokenObj struct {
+	Token string `json:"token"`
+}
+
 func main() {
 
     numarg := len(os.Args)
@@ -149,11 +153,13 @@ func main() {
 		fmt.Printf("port:    %s\n", portStr)
 		fmt.Printf("user:    %s\n", userStr)
 		fmt.Printf("pwd:     %s\n", pwdStr)
+/*
 		for k, v :=range flagMap {
 			if k != "dbg" && k !="db" {
-				fmt.Printf("flag: %s value: %s\n", k, v)
+				fmt.Printf("  flag: %s value: %s\n", k, v)
 			}
 		}
+*/
 	}
 
 	parStr := "user="+userStr+"&pwd="+pwdStr
@@ -195,20 +201,32 @@ func main() {
     defer resp.Body.Close()
 
 	// get response code
+	log.Println("************* Http Response ***********")
 	log.Println("HTTP Response Status:", resp.StatusCode, http.StatusText(resp.StatusCode))
 
 	// read body
-    body, err := ioutil.ReadAll(resp.Body)
+    reqBody, err := ioutil.ReadAll(resp.Body)
     if err != nil {
         log.Println("Error while reading the response bytes: %v", err)
     }
-    log.Printf("resp body: %s\n", string([]byte(body)))
+    log.Printf("resp body: %s\n", string([]byte(reqBody)))
+
+	tok := TokenObj{}
+	err = json.Unmarshal(reqBody, &tok)
+    if err != nil {
+		log.Fatalf("error -- unmarshall body")
+	}
+	fmt.Printf("tok: %s\n",tok.Token)
+
+	err = os.WriteFile("token.dat",reqBody,0644)
+	if err != nil {log.Fatalf("error write Token: %v\n", err)}
 
 	// cookies
 	cookies := resp.Cookies()
 	for i, cookie := range cookies {
     	fmt.Printf("Cookie[%d]: %s=%s\n", i, cookie.Name, cookie.Value)
 	}
+	log.Println("*********** End Http Response *********")
 
 
 	log.Println("success end apic!")
